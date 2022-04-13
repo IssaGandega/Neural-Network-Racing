@@ -1,0 +1,183 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public class AgentManager : MonoBehaviour
+{
+    [SerializeField] private CameraController cam;
+    
+    public int populationSize = 200;
+    public int generationNb;
+    
+    [Range(0, 120)]
+    public float trainingDuration = 30;
+
+    [Range(0, 100)] 
+    public float mutationRate = 5;
+
+    [Space]
+    private List<Agent> agents = new List<Agent>();
+    private Agent agent;
+
+    private int diff;
+    private int x;
+    
+    public Agent agentPrefab;
+    public Transform agentGroup;
+
+    public TMP_Text chronoText;
+    public TMP_Text generationText;
+    private float startingTime;
+
+    void Start()
+    {
+        StartCoroutine(Loop());
+        agents.Sort();
+        NeuralNetworkViewer.instance.RefreshAgent(agents[0]);
+
+        startingTime = Time.time;
+    }
+
+    private void Update()
+    {
+        RefreshTimer();
+        Refocus();
+    }
+
+    private IEnumerator Loop()
+    {
+        StartNewGeneration();
+        ResetTimer();
+        yield return new WaitForSeconds(trainingDuration);
+        StartCoroutine(Loop());
+    }
+
+    private void StartNewGeneration()
+    {
+        generationNb += 1;
+        generationText.text = generationNb.ToString();
+        agents.Sort();
+        AddOrRemoveAgents();
+        Mutate();
+        ResetAgents();
+        SetMaterials();
+        cam.target = agents[0].transform;
+    }
+
+    private void AddOrRemoveAgents()
+    {
+        if (agents.Count != populationSize)
+        {
+            diff = populationSize - agents.Count;
+
+            if (diff > 0)
+            {
+                for (x = 0; x < diff; x++)
+                {
+                    AddAgents();
+                }
+            }
+            else
+            {
+                for (x = 0; x < -diff; x++)
+                {
+                    RemoveAgent();
+                }
+            }
+        }
+    }
+
+    private void AddAgents()
+    {
+        agent = Instantiate(agentPrefab, Vector3.zero, Quaternion.identity, agentGroup);
+        agent.net = new NeuralNetwork(agentPrefab.net.layers);
+        agents.Add(agent);
+    }
+    
+    private void RemoveAgent()
+    {
+        Destroy(agents[agents.Count-1].gameObject);
+        agents.RemoveAt(agents.Count-1);
+    }
+    
+    private void Mutate()
+    {
+        for (x = agents.Count/2; x < agents.Count ; x++)
+        {
+            agents[x].net.CopyNet(agents[x - agents.Count / 2].net);
+            agents[x].net.Mutate(mutationRate);
+            agents[x].SetMutantMaterial();
+        }
+    }
+    
+    private void ResetAgents()
+    {
+        for (x = 0; x < agents.Count; x++)
+        {
+            agents[x].ResetAgent();
+        }
+    }
+    
+    private void SetMaterials()
+    {
+        for (x = 1; x < agents.Count/2; x++)
+        {
+            agents[x].SetDefaultMaterial();
+        }
+        
+        agents[0].SetFirstMaterial();
+    }
+
+    public void Save()
+    {
+        List<NeuralNetwork> nets = new List<NeuralNetwork>();
+
+        for (x = 0; x < agents.Count; x++)
+        {
+            nets.Add(agents[x].net);
+        }
+        
+        DataManager.instance.Save(nets);
+    }
+
+    public void Load()
+    {
+        //Doit avoir la même taille que la sauvegarde au load
+        
+        Data data = DataManager.instance.Load();
+
+        if (data != null)
+        {
+            for (x = 0; x < agents.Count; x++)
+            {
+                agents[x].net = data.nets[x];
+            }
+        }
+        End();
+    }
+
+    public void End()
+    { 
+        StopAllCoroutines();
+        StartCoroutine(Loop());
+    }
+
+    void RefreshTimer()
+    {
+        chronoText.text = (trainingDuration - (Time.time - startingTime)).ToString("f0");
+    }
+
+    void ResetTimer()
+    {
+        startingTime = Time.time;
+    }
+
+    public void Refocus()
+    {
+        agents.Sort();
+        NeuralNetworkViewer.instance.RefreshAgent(agents[0]);
+        cam.target = agents[0].transform;
+    }
+}
