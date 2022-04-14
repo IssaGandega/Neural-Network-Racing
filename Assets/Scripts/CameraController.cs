@@ -12,7 +12,7 @@ public class CameraController : MonoBehaviour
     private Vector3 wantedPosition;
     private Quaternion wantedRotation;
 
-    void Update()
+    void FixedUpdate()
     {
         wantedPosition = target.TransformPoint(localPositionToMove);
         wantedPosition.y = target.position.y + localPositionToMove.y;
