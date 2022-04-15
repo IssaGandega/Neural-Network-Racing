@@ -57,6 +57,11 @@ public class Agent : MonoBehaviour, IComparable<Agent>
 		nextCheckpointDist = (nextCheckpoint.position - transform.position).magnitude;
 	}
 
+	private void Start()
+	{
+		//SetInvisible();
+	}
+
 	private void FixedUpdate()
 	{
 		InputUpdate();
@@ -163,6 +168,21 @@ public class Agent : MonoBehaviour, IComparable<Agent>
 	public void SetMutantMaterial()
 	{
 		meshRenderer.material = mutantMat;
+	}
+
+	public void SetVisible()
+	{
+		GetComponentInChildren<MeshRenderer>().enabled = true;
+		GetComponent<PrometeoCarController>().ActivateWheels();
+	}
+
+	public void SetInvisible()
+	{
+		if (GetComponentInChildren<MeshRenderer>().enabled)
+		{
+			GetComponentInChildren<MeshRenderer>().enabled = false;
+			GetComponent<PrometeoCarController>().DesactivateWheels();
+		}
 	}
 
 	public int CompareTo(Agent other)

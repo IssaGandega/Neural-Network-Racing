@@ -2163,7 +2163,7 @@ MonoBehaviour:
   populationSize: 100
   generationNb: 0
   trainingDuration: 60
-  mutationRate: 2
+  mutationRate: 3
   agentPrefab: {fileID: -8015542801446917140, guid: 13b59f4d937e8db4b9c3965766fe2e8a, type: 3}
   agentGroup: {fileID: 1457917521}
   chronoText: {fileID: 713478432}

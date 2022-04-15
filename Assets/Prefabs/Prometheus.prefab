@@ -65,14 +65,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0fefceefe666bb4682b272ec8c5bdd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 190
+  maxSpeed: 160
   maxReverseSpeed: 45
-  accelerationMultiplier: 8
+  accelerationMultiplier: 6
   maxSteeringAngle: 35
   steeringSpeed: 0.5
   brakeForce: 500
   decelerationMultiplier: 3
-  handbrakeDriftMultiplier: 7
+  handbrakeDriftMultiplier: 4
   bodyMassCenter: {x: 0, y: -0.116, z: -0.2}
   frontLeftMesh: {fileID: 8245863664511679452}
   frontLeftCollider: {fileID: 1548177133827534017}
@@ -110,9 +110,10 @@ MonoBehaviour:
   carController: {fileID: 750084612594756923}
   rb: {fileID: 5560652697248839693}
   checkpointFitness: 250
-  driftFitness: 0.2
+  driftFitness: 0.02
   velocityFitness: 0.5
   fitness: 0
+  distanceTravelled: 0
   nextCheckpoint: {fileID: 0}
   rayRange: 7
   layer:

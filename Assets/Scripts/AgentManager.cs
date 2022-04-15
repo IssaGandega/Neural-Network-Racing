@@ -207,8 +207,10 @@ public class AgentManager : MonoBehaviour
 
     public void Refocus()
     {
+        //agentsInLead[0].SetInvisible();
         agentsInLead = agentsInLead.OrderBy(a=>a.distanceTravelled*-1).ToList();
         NeuralNetworkViewer.instance.RefreshAgent(agentsInLead[0]);
         cam.target = agentsInLead[0].transform;
+        //agentsInLead[0].SetVisible();
     }
 }
